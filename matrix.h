@@ -7,20 +7,20 @@
 #include <stdint.h> // Per avere uint8_t
 #include <stdbool.h>
 #include <math.h>
-struct matrix{
+struct matrix {
 	size_t rows;
 	size_t cols;
 	double *data;
 };
 
 struct bmatrix {
-    size_t rows, cols;
-    bool *data;
+	size_t rows, cols;
+	bool *data;
 };
 
-enum comparisons { 
-	LT, LE, EQ, 
-	NE, GE, GT 
+enum comparisons {
+	LT, LE, EQ,
+	NE, GE, GT
 };
 
 struct image {
@@ -49,8 +49,8 @@ extern void mat_destructor(struct matrix *m);
 extern struct matrix *new_mat(int rows, int cols);
 extern void delete_mat(struct matrix *m);
 extern struct matrix *mat_create_copy(struct matrix *src);
-extern double *diag (const struct matrix *matr, size_t n);
-extern double det3x3 (const struct matrix *matr);
+extern double *diag(const struct matrix *matr, size_t n);
+extern double det3x3(const struct matrix *matr);
 extern void matrix_write(const struct matrix *matr, FILE *f);
 extern int matrix_read(struct matrix *matr, FILE *f);
 extern int mat_isupper(const struct matrix *matr);

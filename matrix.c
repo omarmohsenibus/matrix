@@ -1,77 +1,77 @@
 #include "matrix.h"
 
-void print_matrix(const struct matrix *a){
-	print_matrix("Matrice %dx%d:\n", a->rows, a->cols);
-	print_matrix("---------------\n");
-	for(size_t r=0; r < a->rows; r++){
-		for(size_t c=0; c < a->cols; c++){
-			printf("%d", a->data[r*a->cols+c]);
+void print_matrix(const struct matrix *a) {
+	printf("Matrice %dx%d:\n", a->rows, a->cols);
+	printf("---------------\n");
+	for (size_t r = 0; r < a->rows; r++) {
+		for (size_t c = 0; c < a->cols; c++) {
+			printf("\t%lf", a->data[r*a->cols + c]);
 		}
 		printf("\n");
 	}
-	print_matrix("---------------\n");
+	printf("---------------\n");
 }
 
-void prod_per_scalare(struct matrix *mat, double k){
-    for (int r = 0; r < mat->rows; ++r) {
-        for (int c = 0; c < mat->cols; ++c) {
-            mat->data[r * mat->cols + c] *= k;
-        }
-    }
+void prod_per_scalare(struct matrix *mat, double k) {
+	for (int r = 0; r < mat->rows; ++r) {
+		for (int c = 0; c < mat->cols; ++c) {
+			mat->data[r * mat->cols + c] *= k;
+		}
+	}
 }
 
-struct matrix *mat_copy(struct matrix *dst, struct matrix const *src){
-    int size = src->rows * src->cols;
-    for (int i = 0; i < size; ++i) {
-        dst->data[i] = src->data[i];
-    }
-    return dst;
+struct matrix *mat_copy(struct matrix *dst, struct matrix const *src) {
+	int size = src->rows * src->cols;
+	for (int i = 0; i < size; ++i) {
+		dst->data[i] = src->data[i];
+	}
+	return dst;
 }
 
-struct matrix *mat_constructor(struct matrix *m, int rows, int cols){
-    m->rows = rows;
-    m->cols = cols;
-    m->data = malloc(rows*cols * sizeof(double));
-    return m;
+struct matrix *mat_constructor(struct matrix *m, int rows, int cols) {
+	m->rows = rows;
+	m->cols = cols;
+	m->data = malloc(rows*cols * sizeof(double));
+	return m;
 }
 
-void mat_destructor(struct matrix *m){
-    free(m->data);
+void mat_destructor(struct matrix *m) {
+	free(m->data);
 }
 
-struct matrix *new_mat(int rows, int cols){
-    return mat_constructor(malloc(sizeof(struct matrix)), 
-        rows, cols);
+struct matrix *new_mat(int rows, int cols) {
+	return mat_constructor(malloc(sizeof(struct matrix)),
+		rows, cols);
 }
 
-void delete_mat(struct matrix *m){
-    mat_destructor(m);
-    free(m);
+void delete_mat(struct matrix *m) {
+	mat_destructor(m);
+	free(m);
 }
 
-struct matrix *mat_create_copy(struct matrix *src){
-    return mat_copy(new_mat(src->rows, src->cols), src);
+struct matrix *mat_create_copy(struct matrix *src) {
+	return mat_copy(new_mat(src->rows, src->cols), src);
 }
 
-double *diag (const struct matrix *matr){
+double *diag(const struct matrix *matr) {
 	double *result = NULL;
-	if(matr != NULL){
-		result = malloc(matr->rows*sizeof(double));
-		size_t i=0;
-		for(size_t r = 0; r < matr->rows; r++){
-			for(size_t c = 0; c < matr->cols; c++){
-				if(r==c)	result[i] = matr->data[r*matr->cols+c];
+	if (matr != NULL) {
+		result = malloc(matr->rows * sizeof(double));
+		size_t i = 0;
+		for (size_t r = 0; r < matr->rows; r++) {
+			for (size_t c = 0; c < matr->cols; c++) {
+				if (r == c)	result[i] = matr->data[r*matr->cols + c];
 			}
-		} 
+		}
 	}
 	return result;
 }
 
-double det3x3 (const struct matrix *matr){
+double det3x3(const struct matrix *matr) {
 	double result = NAN;
-	if(matr != NULL){
-		result = matr->data[0]*matr->data[4]*matr->data[8] -
-				 matr->data[2]*matr->data[4]*matr->data[6];
+	if (matr != NULL) {
+		result = matr->data[0] * matr->data[4] * matr->data[8] -
+			matr->data[2] * matr->data[4] * matr->data[6];
 	}
 	return result;
 }
@@ -84,7 +84,7 @@ void matrix_write(const struct matrix *matr, FILE *f) {
 				for (size_t r = 0; r < matr->rows; r++) {
 					for (size_t c = 0; c < matr->cols; c++) {
 						fprintf(f, "%f", matr->data[r * matr->cols + c]);
-						if(c + 1 != matr->cols)	fputc('\t', f);
+						if (c + 1 != matr->cols)	fputc('\t', f);
 					}
 					//a capo
 					fputc('\n', f);
@@ -195,46 +195,47 @@ struct matrix *mat_transpose(const struct matrix *mat) {
 	return result;
 }
 
-struct matrix *mat_replica(const struct matrix *a, int dir){//non funziona
+struct matrix *mat_replica(const struct matrix *a, int dir) {//non funziona
 	//dir = 0 -> replica orizzontalmente
 	//dir != 0 -> replica verticalmente
-	
+
 	struct matrix *result = NULL;
-	
-	if(a != NULL){
-		if(a->data != NULL){
+
+	if (a != NULL) {
+		if (a->data != NULL) {
 			result = malloc(sizeof(struct matrix));
-			if(dir == 0){
+			if (dir == 0) {
 				result->rows = a->rows;
 				result->cols = a->cols * 2;
-			} else {
+			}
+			else {
 				result->rows = a->rows * 2;
 				result->cols = a->cols;
 			}
-			
-			result->data = malloc(result->rows*result->cols*sizeof(double));
-			
+
+			result->data = malloc(result->rows*result->cols * sizeof(double));
+
 			//horizzontal
-			for(size_t i = 0; i < 2; i++){
-				for(size_t r = 0; r < result->rows; r++){
-					for(size_t c = i*a->cols; c < result->cols; c++){
+			for (size_t i = 0; i < 2; i++) {
+				for (size_t r = 0; r < result->rows; r++) {
+					for (size_t c = i * a->cols; c < result->cols; c++) {
 						result->data[r * a->cols + c] = a->data[r * a->cols + c];
 					}
 				}
 			}
-			
+
 			//vertical
-			
-			for(size_t i = 0; i < 2; i++){
-				for(size_t r = 0; r < result->rows; r++){
-					for(size_t c = i*a->cols; c < result->cols; c++){
+
+			for (size_t i = 0; i < 2; i++) {
+				for (size_t r = 0; r < result->rows; r++) {
+					for (size_t c = i * a->cols; c < result->cols; c++) {
 						result->data[r * a->cols + c] = a->data[r * a->cols + c];
 					}
 				}
 			}
 		}
 	}
-	
+
 	return result;
 }
 
@@ -291,9 +292,9 @@ struct matrix *mat_creatediag(const double *values, size_t n) {
 	return result;
 }
 
-struct image *image_doublesize(const struct image *img){//non funziona
+struct image *image_doublesize(const struct image *img) {//non funziona
 	struct image *result = NULL;
-	
+
 	return NULL;
 }
 
@@ -343,7 +344,7 @@ double *bordo_esterno(const struct matrix *m, size_t *new_size) {
 	double *result = NULL;
 
 	if (m != NULL) {
-		result = malloc(m->rows*m->cols*sizeof(double));
+		result = malloc(m->rows*m->cols * sizeof(double));
 
 		size_t i = 0;
 		for (size_t r = 0; r < m->rows; r++) {
@@ -354,13 +355,13 @@ double *bordo_esterno(const struct matrix *m, size_t *new_size) {
 				}
 			}
 		}
-		result = realloc(result, i*sizeof(double));
+		result = realloc(result, i * sizeof(double));
 		*new_size = i;
 	}
 	return result;
 }
 
-struct matrix *rotate_v(const struct matrix *m, int n){
+struct matrix *rotate_v(const struct matrix *m, int n) {
 	return NULL;
 }
 
@@ -386,26 +387,26 @@ struct matrix *mat_permute_rows(const struct matrix *m, const size_t *p) {
 }
 
 bool cmp_eval(const double mat_el, double rhs, enum comparisons cmp) {
-	switch (cmp){
-		case LT:
-			return mat_el < rhs;
-		break; 
-		case EQ:
-			return mat_el == rhs;
+	switch (cmp) {
+	case LT:
+		return mat_el < rhs;
 		break;
-		case LE:
-			return mat_el <= rhs;
-		break; 
-		case NE:
-			return mat_el != rhs;
-		break; 
-		case GE:
-			return mat_el >= rhs;
-		break; 
-		case GT:
-			return mat_el > rhs;
-			break;
-		default: break;
+	case EQ:
+		return mat_el == rhs;
+		break;
+	case LE:
+		return mat_el <= rhs;
+		break;
+	case NE:
+		return mat_el != rhs;
+		break;
+	case GE:
+		return mat_el >= rhs;
+		break;
+	case GT:
+		return mat_el > rhs;
+		break;
+	default: break;
 	}
 
 	return false;
@@ -467,7 +468,7 @@ struct image *aggiungi_cornice(const struct image *img) {
 		result->data = calloc(result->rows*result->cols, sizeof(uint8_t));
 
 		for (size_t r = 0; r < img->rows; r++) {
-			for (size_t c = 0; c < img->cols;c++) {
+			for (size_t c = 0; c < img->cols; c++) {
 				result->data[(r + 1)*result->cols + (c + 1)] = img->data[r*img->cols + c];
 			}
 		}
@@ -476,14 +477,3 @@ struct image *aggiungi_cornice(const struct image *img) {
 
 	return result;
 }
-
-
-
-
-
-
-
-
-
-
-
